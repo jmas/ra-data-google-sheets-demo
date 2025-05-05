@@ -7,14 +7,17 @@ export const googleSheetsDataProvider = (spreadsheetId) => {
             range: resource,
         });
         const sheet = processSheet(response.result.values);
+        let data = sheet.data;
+        if (params && params.filter) {
+            data = data.filter((record) => Object.keys(params.filter).every((key) => record[key] == params.filter[key]));
+        }
         if (params && params.pagination) {
             const { page, perPage } = params.pagination;
             const firstLineNumber = (page - 1) * perPage;
             const lastLineNumber = firstLineNumber + perPage;
-            const paginatedValues = sheet.data.slice(firstLineNumber, lastLineNumber);
-            return Object.assign(Object.assign({}, sheet), { data: paginatedValues });
+            data = data.slice(firstLineNumber, lastLineNumber);
         }
-        return sheet;
+        return Object.assign(Object.assign({}, sheet), { data });
     };
     const getResourceHeaders = async (resource) => {
         const response = await window.gapi.client.sheets.spreadsheets.values.get({

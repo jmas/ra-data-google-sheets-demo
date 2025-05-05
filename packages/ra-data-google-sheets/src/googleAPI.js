@@ -66,7 +66,7 @@ export const login = () => {
 // Вихід користувача (прибирає токен)
 export const logout = () => {
   window.google.accounts.oauth2.revoke(tokenClient.access_token, () => {
-    console.log("Access token revoked");
+    console.info("Access token revoked");
   });
   return Promise.resolve();
 };
